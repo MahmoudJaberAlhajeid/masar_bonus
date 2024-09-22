@@ -130,7 +130,7 @@ app_license = "mit"
 # Override standard doctype classes
 
 override_doctype_class = {
-	"Sales Invoice": "masar_bouns.override._sales_invoice.SalesInvoice"
+	"Sales Invoice": "masar_bonus.override._sales_invoice.SalesInvoice"
 }
 
 # Document Events
