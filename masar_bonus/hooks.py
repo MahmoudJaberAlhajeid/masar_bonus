@@ -129,9 +129,9 @@ app_license = "mit"
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {
+	"Sales Invoice": "masar_bouns.override._sales_invoice.SalesInvoice"
+}
 
 # Document Events
 # ---------------
@@ -242,3 +242,13 @@ app_license = "mit"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+fixtures = [
+    {"dt": "Custom Field", "filters": [
+        [
+            "name", "in", [
+               "Sales Invoice Item-custom_bonus_qty",
+               "Sales Invoice-custom_total_qty_with_bonus"
+                ]
+        ]
+    ]},
+]
