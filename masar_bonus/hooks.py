@@ -130,7 +130,8 @@ app_license = "mit"
 # Override standard doctype classes
 
 override_doctype_class = {
-	"Sales Invoice": "masar_bonus.override._sales_invoice.SalesInvoice"
+	"Sales Invoice": "masar_bonus.override._sales_invoice.SalesInvoice",
+    "Purchase Invoice" :"masar_bonus.override._purchase_inovice.PurchaseInvoice"
 }
 
 # Document Events
@@ -247,7 +248,9 @@ fixtures = [
         [
             "name", "in", [
                "Sales Invoice Item-custom_bonus_qty",
-               "Sales Invoice-custom_total_qty_with_bonus"
+               "Sales Invoice-custom_total_qty_with_bonus",
+               "Purchase Invoice Item-custom_bonus_qty",
+               "Purchase Invoice-custom_total_quantity_with_bonus"
                 ]
         ]
     ]},

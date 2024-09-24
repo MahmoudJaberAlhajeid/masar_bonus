@@ -461,7 +461,7 @@ class SalesInvoice(SellingController):
 					continue
 				for item in self.items:
 					if item.custom_bonus_qty:
-						item.stock_qty = item.stock_qty + item.custom_bonus_qty
+						item.stock_qty = item.stock_qty + item.custom_bonus_qty*item.conversion_factor
 				self.make_bundle_for_sales_purchase_return(table_name)
 				self.make_bundle_using_old_serial_batch_fields(table_name)
 
@@ -563,7 +563,7 @@ class SalesInvoice(SellingController):
 		if self.update_stock == 1:
 			for item in self.items:
 					if item.custom_bonus_qty:
-						item.stock_qty = item.stock_qty + item.custom_bonus_qty
+						item.stock_qty = item.stock_qty + item.custom_bonus_qty*item.conversion_factor
 			self.update_stock_ledger()
 
 		self.make_gl_entries_on_cancel()
