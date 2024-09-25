@@ -132,9 +132,10 @@ app_license = "mit"
 override_doctype_class = {
 	"Sales Invoice": "masar_bonus.override._sales_invoice.SalesInvoice",
     "Purchase Invoice" :"masar_bonus.override._purchase_inovice.PurchaseInvoice",
-    # "Serial and Batch Bundle" :"masar_bonus.override._serial_and_batch_bundle.SerialandBatchBundle",
+    "Serial and Batch Bundle" :"masar_bonus.override._serial_and_batch_bundle.SerialandBatchBundle",
     "Purchase Receipt" : "masar_bonus.override._purchase_receipt.PurchaseReceipt"
 }
+#
 
 # Document Events
 # ---------------

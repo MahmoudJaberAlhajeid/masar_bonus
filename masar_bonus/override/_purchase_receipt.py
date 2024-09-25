@@ -377,10 +377,6 @@ class PurchaseReceipt(BuyingController):
 
 		for item in self.items:
 			if item.custom_bonus_qty:
-					if item.conversion_factor:
-						conversion_factor = item.conversion_factor
-					else:
-						conversion_factor = 1
 					item.qty += item.custom_bonus_qty
 					item.stock_qty += item.custom_bonus_qty
 		self.make_bundle_for_sales_purchase_return()
@@ -419,9 +415,6 @@ class PurchaseReceipt(BuyingController):
 
 		# Updating stock ledger should always be called after updating prevdoc status,
 		# because updating ordered qty in bin depends upon updated ordered qty in PO
-		self.update_stock_ledger()
-		self.make_gl_entries_on_cancel()
-		self.repost_future_sle_and_gle()
 		self.ignore_linked_doctypes = (
 			"GL Entry",
 			"Stock Ledger Entry",
@@ -430,6 +423,13 @@ class PurchaseReceipt(BuyingController):
 		)
 		self.delete_auto_created_batches()
 		self.set_consumed_qty_in_subcontract_order()
+		for item in self.items:
+			if item.custom_bonus_qty:
+					item.qty += item.custom_bonus_qty
+					item.stock_qty += item.custom_bonus_qty
+		self.update_stock_ledger()
+		self.make_gl_entries_on_cancel()
+		self.repost_future_sle_and_gle()
 
 	def get_gl_entries(self, warehouse_account=None, via_landed_cost_voucher=False):
 		from erpnext.accounts.general_ledger import process_gl_map

@@ -786,8 +786,8 @@ class PurchaseInvoice(BuyingController):
 						conversion_factor = item.conversion_factor
 					else:
 						conversion_factor = 1
-					item.qty += item.custom_bonus_qty * conversion_factor
-					item.stock_qty += item.custom_bonus_qty * conversion_factor
+					item.qty += round(item.custom_bonus_qty ,2)
+					item.stock_qty += round(item.custom_bonus_qty ,2)
 			self.total_qty = sum(item.qty for item in self.items)			
 			self.make_bundle_for_sales_purchase_return()
 			self.make_bundle_using_old_serial_batch_fields()
@@ -1563,28 +1563,19 @@ class PurchaseInvoice(BuyingController):
 
 		# Updating stock ledger should always be called after updating prevdoc status,
 		# because updating ordered qty in bin depends upon updated ordered qty in PO
+		total_qty = self.total_qty
 		if self.update_stock == 1:
-			total_qty = self.total_qty
 			for item in self.items:
-					if item.custom_bonus_qty:
-						if item.conversion_factor:
-								conversion_factor = item.conversion_factor
-						else:
-								conversion_factor =1 
-						item.qty = item.qty +( item.custom_bonus_qty *conversion_factor)
-						total_qty += item.qty
-			self.total_qty = total_qty
+				if item.custom_bonus_qty:
+					if item.conversion_factor:
+						conversion_factor = item.conversion_factor
+					else:
+						conversion_factor = 1
+					item.qty += round(item.custom_bonus_qty ,2)
+					item.stock_qty += round(item.custom_bonus_qty ,2)
+			self.total_qty = sum(item.qty for item in self.items)
 			self.update_stock_ledger()
-			self.delete_auto_created_batches()
-			for item in self.items:
-					if item.custom_bonus_qty:
-						if item.conversion_factor:
-								conversion_factor = item.conversion_factor
-						else:
-								conversion_factor =1 
-						item.qty = item.qty - ( item.custom_bonus_qty *conversion_factor)
-						total_qty -= item.qty
-			self.total_qty = total_qty      
+			self.delete_auto_created_batches()    
 			if self.is_old_subcontracting_flow:
 				self.set_consumed_qty_in_subcontract_order()
 
