@@ -131,7 +131,9 @@ app_license = "mit"
 
 override_doctype_class = {
 	"Sales Invoice": "masar_bonus.override._sales_invoice.SalesInvoice",
-    "Purchase Invoice" :"masar_bonus.override._purchase_inovice.PurchaseInvoice"
+    "Purchase Invoice" :"masar_bonus.override._purchase_inovice.PurchaseInvoice",
+    # "Serial and Batch Bundle" :"masar_bonus.override._serial_and_batch_bundle.SerialandBatchBundle",
+    "Purchase Receipt" : "masar_bonus.override._purchase_receipt.PurchaseReceipt"
 }
 
 # Document Events
@@ -175,9 +177,9 @@ override_doctype_class = {
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "masar_bonus.event.get_events"
-# }
+override_whitelisted_methods = {
+	"erpnext.accounts.doctype.purchase_invoice.purchase_invoice.make_purchase_receipt": "masar_bonus.override._purchase_inovice.make_purchase_receipt"
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
@@ -250,7 +252,8 @@ fixtures = [
                "Sales Invoice Item-custom_bonus_qty",
                "Sales Invoice-custom_total_qty_with_bonus",
                "Purchase Invoice Item-custom_bonus_qty",
-               "Purchase Invoice-custom_total_quantity_with_bonus"
+               "Purchase Invoice-custom_total_quantity_with_bonus", 
+               "Purchase Receipt Item-custom_bonus_qty"
                 ]
         ]
     ]},

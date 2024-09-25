@@ -781,30 +781,19 @@ class PurchaseInvoice(BuyingController):
 		total_qty = self.total_qty
 		if self.update_stock == 1:
 			for item in self.items:
-					if item.custom_bonus_qty:
-						if item.conversion_factor:
-								conversion_factor = item.conversion_factor
-						else:
-								conversion_factor =1 
-						item.qty = item.qty +( item.custom_bonus_qty *conversion_factor)
-						total_qty += item.qty
-			self.total_qty = total_qty
-
+				if item.custom_bonus_qty:
+					if item.conversion_factor:
+						conversion_factor = item.conversion_factor
+					else:
+						conversion_factor = 1
+					item.qty += item.custom_bonus_qty * conversion_factor
+					item.stock_qty += item.custom_bonus_qty * conversion_factor
+			self.total_qty = sum(item.qty for item in self.items)			
 			self.make_bundle_for_sales_purchase_return()
 			self.make_bundle_using_old_serial_batch_fields()
 			self.update_stock_ledger()
-			for item in self.items:
-					if item.custom_bonus_qty:
-						if item.conversion_factor:
-								conversion_factor = item.conversion_factor
-						else:
-								conversion_factor =1 
-						item.qty = item.qty - ( item.custom_bonus_qty *conversion_factor)
-						total_qty -= item.qty
-			self.total_qty = total_qty      
 			if self.is_old_subcontracting_flow:
 				self.set_consumed_qty_in_subcontract_order()
-			# self = self_pacbup 
 		# this sequence because outstanding may get -negative
 
 
@@ -1981,3 +1970,48 @@ def make_inter_company_sales_invoice(source_name, target_doc=None):
 	from erpnext.accounts.doctype.sales_invoice.sales_invoice import make_inter_company_transaction
 
 	return make_inter_company_transaction("Purchase Invoice", source_name, target_doc)
+
+@frappe.whitelist()
+def make_purchase_receipt(source_name, target_doc=None):
+	def update_item(obj, target, source_parent):
+		# obj.qty = obj.qty - obj.custom_bonus_qty
+		target.qty = flt(obj.qty) - flt(obj.received_qty)
+		target.received_qty = flt(obj.qty) - flt(obj.received_qty)
+		target.stock_qty = (flt(obj.qty) - flt(obj.received_qty)) * flt(obj.conversion_factor)
+		target.amount = (flt(obj.qty) - flt(obj.received_qty)) * flt(obj.rate)
+		target.custom_bonus_qty = flt(obj.custom_bonus_qty)
+		target.base_amount = (
+			(flt(obj.qty) - flt(obj.received_qty)) * flt(obj.rate) * flt(source_parent.conversion_rate)
+		)
+
+	doc = get_mapped_doc(
+		"Purchase Invoice",
+		source_name,
+		{
+			"Purchase Invoice": {
+				"doctype": "Purchase Receipt",
+				"validation": {
+					"docstatus": ["=", 1],
+				},
+			},
+			"Purchase Invoice Item": {
+				"doctype": "Purchase Receipt Item",
+				"field_map": {
+					"name": "purchase_invoice_item",
+					"parent": "purchase_invoice",
+					"bom": "bom",
+					"purchase_order": "purchase_order",
+					"po_detail": "purchase_order_item",
+					"material_request": "material_request",
+					"material_request_item": "material_request_item",
+					"wip_composite_asset": "wip_composite_asset",
+				},
+				"postprocess": update_item,
+				"condition": lambda doc: abs(doc.received_qty) < abs(doc.qty),
+			},
+			"Purchase Taxes and Charges": {"doctype": "Purchase Taxes and Charges"},
+		},
+		target_doc,
+	)
+
+	return doc
