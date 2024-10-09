@@ -508,7 +508,7 @@ class SerialandBatchBundle(Document):
 		qty = row.get(qty_field)
 		if qty_field == "qty" and row.get("stock_qty"):
 			qty = row.get("stock_qty")
-		if row.custom_bonus_qty:
+		if hasattr(row , 'custom_bonus_qty') and row.custom_bonus_qty:
 				bonus_qty = row.custom_bonus_qty * row.get("conversion_factor")
 		else:
 				bonus_qty = 0     
